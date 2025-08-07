@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Radheshyam - Digital Store</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+    h1 {
+      text-align: center;
+      background-color: #6200ee;
+      color: white;
+      padding: 20px 0 10px;
+      margin: 0;
+    }
+    .banner {
+      background: #ff9800;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      font-weight: bold;
+    }
+    .main {
+      display: flex;
+    }
+    .sidebar {
+      width: 200px;
+      background: #ddd;
+      padding-top: 20px;
+    }
+    .sidebar button {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .content {
+      flex-grow: 1;
+      padding: 20px;
+    }
+    .category {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .product-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .product-card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 200px;
+      padding: 10px;
+      text-align: center;
+      position: relative;
+    }
+    .product-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      pointer-events: none;
+    }
+    .price {
+      text-decoration: line-through;
+      color: #888;
+    }
+    .discounted {
+      font-weight: bold;
+      color: #000;
+    }
+    .add {
+      margin-top: 8px;
+      padding: 6px 12px;
+      background: #6200ee;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+    }
+    #cart {
+      background: #fff;
+      padding: 20px;
+      margin: 30px auto;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #aaa;
+      max-width: 600px;
+    }
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      margin: 10px 0;
+    }
+    .delete-btn {
+      background: red;
+      color: white;
+      border: none;
+      padding: 2px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+  <script>
+    document.addEventListener('contextmenu', event => event.preventDefault());
+  </script>
+</head>
+<body>
+<h1>RadheShyam - Digital Store</h1>
+<div class="banner">
+  🎉 Special Offer: Get 10% off on all purchases till 15th August!
+</div>
+
+<div class="main">
+  <div class="sidebar">
+    <button onclick="switchCategory('wallart')">🖼️ Wall Art</button>
+    <button onclick="switchCategory('ytthumbs')">🎞️ YouTube Thumbnails</button>
+  </div>
+  <div class="content">
+    <div id="wallart" class="section">
+      <div class="category">Wall Art</div>
+      <div class="product-grid" id="wallart-products"></div>
+    </div>
+
+    <div id="ytthumbs" class="section" style="display:none;">
+      <div class="category">YouTube Thumbnails</div>
+      <div class="product-grid" id="yt-products"></div>
+    </div>
+  </div>
+</div>
+
+<div id="cart">
+  <h2>🛒 Your Cart</h2>
+  <div id="cart-items"></div>
+  <h3 id="total">Total: ₹0</h3>
+  <p style="color:red;"><strong>📲 To purchase:</strong> WhatsApp me at <strong>8368586823</strong> with your cart items. I will send UPI details and download links after payment.<br>You can also pay via PhonePe or Paytm using any QR scanner (QR will be available soon).</p>
+</div>
+
+<script>
+  const wallArtProducts = [
+    { title: "Stay Humble (Free)", sp: 0, dp: 0, img: "images/stay_humble.png" },
+    { title: "Autumn Calm (Free)", sp: 0, dp: 0, img: "images/autumn_calm.png" },
+    { title: "Wall Art", sp: 123, dp: 53, img: "images/wallArt.png" },
+    { title: "Tree Wall Art", sp: 123, dp: 53, img: "images/Tree.png" },
+    { title: "Botanical Art", sp: 123, dp: 53, img: "images/Botanical.png" },
+    { title: "Mumbai Wall Art", sp: 199, dp: 199, img: "images/Mumbai.png" },
+    { title: "Dream Big", sp: 123, dp: 53, img: "images/DREAM BIG.png" },
+    { title: "Rooted Culture", sp: 123, dp: 53, img: "images/ROOTED CULTURE.png" },
+    { title: "Traditional Vibes", sp: 253, dp: 203, img: "images/Traditional People Vibes.png" },
+    { title: "Maharaja", sp: 253, dp: 203, img: "images/Maharaja.png" }
+  ];
+
+  const ytProducts = [
+    { title: "ASPHALT 9", sp: 143, dp: 129, img: "images/ASPHALT9.png" },
+    { title: "BGMI", sp: 189, dp: 170, img: "images/BGMI.png" },
+    { title: "Basic Hack", sp: 143, dp: 130, img: "images/Basic hack.png" },
+    { title: "FOOTBALL", sp: 203, dp: 183, img: "images/FOOTBALL.png" },
+    { title: "MINECRAFT", sp: 215, dp: 194, img: "images/MINECRAFT.png" },
+    { title: "OOTY CAMPAIGN", sp: 153, dp: 137, img: "images/OOTY CAMPAIGN.png" },
+    { title: "VALORANT", sp: 199, dp: 179, img: "images/VALORANT.png" }
+  ];
+
+  let cart = [];
+
+  function switchCategory(category) {
+    document.querySelectorAll('.section').forEach(sec => sec.style.display = 'none');
+    document.getElementById(category).style.display = 'block';
+  }
+
+  function renderProducts(arr, containerId) {
+    const grid = document.getElementById(containerId);
+    grid.innerHTML = "";
+    arr.forEach(p => {
+      const div = document.createElement("div");
+      div.className = "product-card";
+      const isFree = p.dp === 0;
+      div.innerHTML = `
+        <img src="${p.img}" alt="${p.title}">
+        <h3>${p.title}</h3>
+        <p>
+          ${isFree
+            ? '<span style="color:green; font-weight:bold;">FREE</span>'
+            : `<span class="price">₹${p.sp}</span> <span class="discounted">₹${p.dp}</span>`}
+        </p>
+        ${isFree
+          ? `<a class="add" href="${p.img}" download>Download</a>`
+          : `<button class="add" onclick="addToCart('${p.title}', ${p.dp}, '${p.img}')">Add to Cart</button>`}
+      `;
+      grid.appendChild(div);
+    });
+  }
+
+  function addToCart(title, discounted, img) {
+    cart.push({ title, discounted, img });
+    renderCart();
+  }
+
+  function removeItem(i) {
+    cart.splice(i, 1);
+    renderCart();
+  }
+
+  function renderCart() {
+    const box = document.getElementById("cart-items");
+    box.innerHTML = "";
+    let total = 0;
+    cart.forEach((item, i) => {
+      const discount = item.discounted * 0.10;
+      const finalPrice = item.discounted - discount;
+      total += finalPrice;
+      box.innerHTML += `
+        <div class="cart-item">
+          <span><strong>Product:</strong> ${item.title}<br>Discounted Price: ₹${item.discounted}<br>10% Off: ₹${finalPrice.toFixed(2)}</span>
+          <button class="delete-btn" onclick="removeItem(${i})">❌</button>
+        </div>
+      `;
+    });
+    document.getElementById("total").innerText = `Total: ₹${total.toFixed(2)}`;
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    switchCategory('wallart');
+    renderProducts(wallArtProducts, "wallart-products");
+    renderProducts(ytProducts, "yt-products");
+  });
+</script>
+
+</body>
+</html>
